@@ -20,7 +20,7 @@ class PluginScaffold {
   static void _setChannelCallHandler(MethodChannel channel) {
     channel.setMethodCallHandler((call) async {
       final key = getCallHandlerKey(channel, call.method);
-      final handlers = callHandlers[key];
+      final handlers = callHandlers[key]!;
       for (var handler in handlers) {
         handler(call.arguments);
       }
@@ -34,7 +34,7 @@ class PluginScaffold {
   ) {
     final key = getCallHandlerKey(channel, methodName);
     callHandlers.putIfAbsent(key, () => {});
-    callHandlers[key].add(handler);
+    callHandlers[key]!.add(handler);
     _setChannelCallHandler(channel);
   }
 
@@ -61,21 +61,21 @@ class PluginScaffold {
     callHandlers.remove(getCallHandlerKey(channel, methodName));
   }
 
-  static Stream<T> createStream<T>(
+  static Stream<T?> createStream<T>(
     MethodChannel channel,
     String streamName, [
     dynamic args,
   ]) {
-    return createStreamController(channel, streamName, args).stream;
+    return createStreamController(channel, streamName, args).stream as Stream<T?>;
   }
 
-  static StreamController<T> createStreamController<T>(
+  static StreamController<T?> createStreamController<T>(
     MethodChannel channel,
     String streamName, [
     dynamic args,
   ]) {
-    StreamController<T> controller;
-    controller = StreamController<T>.broadcast(
+    late StreamController<T?> controller;
+    controller = StreamController<T?>.broadcast(
       onListen: () async {
         final hashCode = controller.hashCode;
         final prefix = '$streamName/$hashCode';
